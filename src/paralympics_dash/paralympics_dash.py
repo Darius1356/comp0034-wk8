@@ -115,6 +115,17 @@ def create_card_from_df(event_id):
     )
     return card
 
+from dash import Input, Output
+
+
+@app.callback(
+    Output(component_id='line', component_property='figure'),
+    Input(component_id='type-dropdown', component_property='value')
+)
+def update_line_chart(chart_type):
+    figure = line_chart(chart_type)
+    return figure
+
 
 # This version requires the Flask REST app to be running
 # card = create_card(12)
