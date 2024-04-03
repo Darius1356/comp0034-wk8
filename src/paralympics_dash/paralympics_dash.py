@@ -4,7 +4,7 @@ import requests
 from dash import Dash, html, dcc
 import dash_bootstrap_components as dbc
 
-from figures import line_chart, bar_gender, scatter_geo, event_data
+from figures import line_chart, bar_gender, scatter_geo, event_data, bar_gender_faceted
 
 external_stylesheets = [dbc.themes.BOOTSTRAP]
 meta_tags = [
@@ -126,7 +126,24 @@ def update_line_chart(chart_type):
     figure = line_chart(chart_type)
     return figure
 
+@app.callback(
+    Output(component_id='bar', component_property='figure'),
+    Input(component_id='checklist-input', component_property='value')
+)
+def update_bar_chart(event_type):
+    figure = bar_gender_faceted(event_type)
+    return figure
 
+@app.callback(
+    Output('card','children'),
+    Input('map','hoverData')
+)
+def display_card(hover_data):
+    if hover_data is not None:
+        event_id = hover_data['points'][0]['customdata'][0]
+        if event_id is not None:
+            return create_card(event_id)
+        
 # This version requires the Flask REST app to be running
 # card = create_card(12)
 
@@ -188,7 +205,7 @@ row_four = dbc.Row([
     ], width=8, align="start"),
     dbc.Col(children=[
         html.Br(),
-        card,
+        html.Div(id='card'),
     ], width=4, align="start"),
 ])
 
